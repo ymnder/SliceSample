@@ -1,12 +1,16 @@
 package com.example.ymnd.slicesample
 
+import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
-
+import androidx.core.graphics.drawable.IconCompat
 import androidx.slice.Slice
 import androidx.slice.SliceProvider
 import androidx.slice.builders.ListBuilder
+import androidx.slice.builders.SliceAction
+import androidx.slice.builders.list
+import androidx.slice.builders.row
 
 class MySliceProvider : SliceProvider() {
     /**
@@ -37,22 +41,37 @@ class MySliceProvider : SliceProvider() {
         return uriBuilder.build()
     }
 
+    fun createActivityAction(): SliceAction {
+        return SliceAction.create(
+                PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), 0),
+                IconCompat.createWithResource(context, R.drawable.ic_android_black),
+                ListBuilder.ICON_IMAGE,
+                "Enter app"
+        )
+    }
+
     /**
      * Construct the Slice and bind data if available.
      */
     override fun onBindSlice(sliceUri: Uri): Slice? {
-        val context = getContext() ?: return null
-        return if (sliceUri.path == "/") {
+        val context = context ?: return null
+        val activityAction = createActivityAction()
+        return if (sliceUri.path == "/found") {
             // Path recognized. Customize the Slice using the androidx.slice.builders API.
-            // Note: ANR and StrictMode are enforced here so don't do any heavy operations. 
+            // Note: ANR and StrictMode are enforced here so don't do any heavy operations.
             // Only bind data that is currently available in memory.
-            ListBuilder(context, sliceUri, ListBuilder.INFINITY)
-                    .addRow { it.setTitle("URI found.") }
-                    .build()
+            list(context, sliceUri, ListBuilder.INFINITY) {
+                row {
+                    title = "Hello Slices:)"
+                    primaryAction = activityAction
+                }
+            }
         } else {
-            // Error: Path not found.
             ListBuilder(context, sliceUri, ListBuilder.INFINITY)
-                    .addRow { it.setTitle("URI not found.") }
+                    .addRow {
+                        it.setTitle("URI not found.")
+                        it.setPrimaryAction(activityAction)
+                    }
                     .build()
         }
     }
