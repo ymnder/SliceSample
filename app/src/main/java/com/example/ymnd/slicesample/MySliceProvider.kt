@@ -11,6 +11,7 @@ import androidx.slice.builders.ListBuilder
 import androidx.slice.builders.SliceAction
 import androidx.slice.builders.list
 import androidx.slice.builders.row
+import androidx.slice.core.SliceHints
 
 class MySliceProvider : SliceProvider() {
     /**
@@ -44,8 +45,8 @@ class MySliceProvider : SliceProvider() {
     fun createActivityAction(): SliceAction {
         return SliceAction.create(
                 PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), 0),
-                IconCompat.createWithResource(context, R.drawable.ic_android_black),
-                ListBuilder.ICON_IMAGE,
+                IconCompat.createWithResource(context, R.drawable.ic_android),
+                ListBuilder.SMALL_IMAGE,
                 "Enter app"
         )
     }
@@ -64,6 +65,10 @@ class MySliceProvider : SliceProvider() {
                 row {
                     title = "Hello Slices:)"
                     primaryAction = activityAction
+                    addEndItem(IconCompat.createWithResource(
+                            context,
+                            R.drawable.ic_share
+                    ), SliceHints.SMALL_IMAGE)
                 }
             }
         } else {
