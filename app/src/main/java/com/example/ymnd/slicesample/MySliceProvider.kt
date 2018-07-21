@@ -128,6 +128,13 @@ class MySliceProvider : SliceProvider() {
                         setTitleItem(anotherAction)
                         addEndItem(activityAction)
                     }
+                    row {
+                        title = "タイトル"
+                        subtitle = "サブタイトル"
+                        addEndItem(activityAction)
+                        addEndItem(activityAction)
+                        addEndItem(System.currentTimeMillis())
+                    }
                 }
                 1 -> list(context, sliceUri, ListBuilder.INFINITY) {
                     for (i in 1 until 10) {
