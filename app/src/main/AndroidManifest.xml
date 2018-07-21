@@ -32,6 +32,8 @@
                     android:scheme="http" />
             </intent-filter>
         </provider>
+
+        <receiver android:name=".MyBroadcastReceiver" />
     </application>
 
 </manifest>

@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
+import androidx.annotation.DrawableRes
 import androidx.core.graphics.drawable.IconCompat
 import androidx.slice.Slice
 import androidx.slice.SliceProvider
@@ -42,12 +43,37 @@ class MySliceProvider : SliceProvider() {
         return uriBuilder.build()
     }
 
-    fun createActivityAction(): SliceAction {
+    private fun createActivityAction(): SliceAction {
         return SliceAction.create(
                 PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), 0),
                 IconCompat.createWithResource(context, R.drawable.ic_android),
                 ListBuilder.SMALL_IMAGE,
                 "Enter app"
+        )
+    }
+
+    private fun createAction(intent: PendingIntent, @DrawableRes resource: Int): SliceAction {
+        return SliceAction.create(
+                intent,
+                IconCompat.createWithResource(context, resource),
+                ListBuilder.SMALL_IMAGE,
+                "Increment"
+        )
+    }
+
+    private fun createIntentToast(): PendingIntent {
+        return PendingIntent.getBroadcast(
+                context, 0,
+                Intent(context, MyBroadcastReceiver::class.java)
+                        .putExtra(MyBroadcastReceiver.EXTRA_INCREMENT, false), 0
+        )
+    }
+
+    private fun createIntentIncrement(): PendingIntent {
+        return PendingIntent.getBroadcast(
+                context, 0,
+                Intent(context, MyBroadcastReceiver::class.java)
+                        .putExtra(MyBroadcastReceiver.EXTRA_INCREMENT, true), 0
         )
     }
 
@@ -69,6 +95,19 @@ class MySliceProvider : SliceProvider() {
                             context,
                             R.drawable.ic_share
                     ), SliceHints.SMALL_IMAGE)
+                }
+            }
+        } else if (sliceUri.path == "/increment") {
+            val action = createAction(createIntentIncrement(), R.drawable.ic_plus)
+            list(context, sliceUri, ListBuilder.INFINITY) {
+                row {
+                    title = "Count: ${MyBroadcastReceiver.currentCount}"
+                    primaryAction = action
+//                    addEndItem(
+//                            IconCompat.createWithResource(
+//                                    context, R.drawable.ic_plus
+//                            ), SliceHints.ICON_IMAGE
+//                    )
                 }
             }
         } else {
