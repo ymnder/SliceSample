@@ -8,10 +8,8 @@ import androidx.annotation.DrawableRes
 import androidx.core.graphics.drawable.IconCompat
 import androidx.slice.Slice
 import androidx.slice.SliceProvider
-import androidx.slice.builders.ListBuilder
-import androidx.slice.builders.SliceAction
-import androidx.slice.builders.list
-import androidx.slice.builders.row
+import androidx.slice.builders.*
+import androidx.slice.builders.ListBuilder.SMALL_IMAGE
 import androidx.slice.core.SliceHints
 
 class MySliceProvider : SliceProvider() {
@@ -69,6 +67,15 @@ class MySliceProvider : SliceProvider() {
         )
     }
 
+    private fun createIntentToastForDebug(requestCode: Int, message: String): PendingIntent {
+        return PendingIntent.getBroadcast(
+                context, requestCode,
+                Intent(context, MyBroadcastReceiver::class.java)
+                        .putExtra(MyBroadcastReceiver.EXTRA_INCREMENT, false)
+                        .putExtra(MyBroadcastReceiver.EXTRA_DEBUG_TOAST, message), 0
+        )
+    }
+
     private fun createIntentIncrement(): PendingIntent {
         return PendingIntent.getBroadcast(
                 context, 0,
@@ -108,6 +115,140 @@ class MySliceProvider : SliceProvider() {
 //                                    context, R.drawable.ic_plus
 //                            ), SliceHints.ICON_IMAGE
 //                    )
+                }
+            }
+        } else if (sliceUri.path == "/template") {
+            val item = Integer.parseInt(sliceUri.fragment)
+            val anotherAction = createAction(createIntentToast(), R.drawable.ic_plus)
+            when (item) {
+                0 -> list(context, sliceUri, ListBuilder.INFINITY) {
+                    row {
+                        title = "タイトル"
+                        subtitle = "サブタイトル"
+                        setTitleItem(anotherAction)
+                        addEndItem(activityAction)
+                    }
+                }
+                1 -> list(context, sliceUri, ListBuilder.INFINITY) {
+                    for (i in 1 until 10) {
+                        row {
+                            title = "タイトル"
+                            subtitle = "サブタイトル"
+                            setTitleItem(anotherAction)
+                            addEndItem(activityAction)
+                        }
+                    }
+                }
+                2 -> list(context, sliceUri, ListBuilder.INFINITY) {
+                    header {
+                        title = "電車が来ます"
+                        subtitle = "２分後に１番ホーム"
+                        summary = "２分後に１番ホームに電車が来ます"
+                        primaryAction = anotherAction
+                    }
+                    row {
+                        title = "東京駅着"
+                        subtitle = "４分、￥140"
+                        primaryAction = activityAction
+                        addEndItem(
+                                IconCompat.createWithResource(context, R.drawable.ic_android),
+                                ListBuilder.ICON_IMAGE
+                        )
+                    }
+                }
+                3 -> {
+                    list(context, sliceUri, ListBuilder.INFINITY) {
+
+                    }
+                }
+                4 -> list(context, sliceUri, ListBuilder.INFINITY) {
+                    header {
+                        title = "グリッドアイテム"
+                    }
+                    gridRow {
+                        cell {
+                            addTitleText("アイテム１")
+                            addText("テキスト１")
+                            addImage(IconCompat.createWithResource(context, R.drawable.ic_android), SMALL_IMAGE)
+                            contentIntent = createIntentToastForDebug(2, "cell")
+                        }
+                        cell {
+                            addTitleText("アイテム２")
+                            addImage(IconCompat.createWithResource(context, R.drawable.ic_android), SMALL_IMAGE)
+                            addText("テキスト２")
+                            contentIntent = createIntentToastForDebug(3, "cell2")
+                        }
+                        cell {
+                            addImage(IconCompat.createWithResource(context, R.drawable.ic_android), SMALL_IMAGE)
+                            addTitleText("アイテム３")
+                            addText("テキスト３")
+                            contentIntent = createIntentToastForDebug(4, "cell3")
+                        }
+                        cell {
+                            addImage(IconCompat.createWithResource(context, R.drawable.ic_android), SMALL_IMAGE)
+                            addText("テキスト４")
+                            addTitleText("アイテム４")
+                            contentIntent = createIntentToastForDebug(5, "cell4")
+                        }
+                        cell {
+                            addTitleText("アイテム５")
+                            addImage(IconCompat.createWithResource(context, R.drawable.ic_android), SMALL_IMAGE)
+                            addText("テキスト５")
+                            contentIntent = createIntentToastForDebug(6, "cell5")
+                        }
+                        cell {
+                            addTitleText("アイテム６")
+                            addImage(IconCompat.createWithResource(context, R.drawable.ic_android), SMALL_IMAGE)
+                            addText("テキスト６")
+                            contentIntent = createIntentToastForDebug(7, "cell6")
+                        }
+                        seeMoreCell {
+                            addTitleText("more")
+                            addImage(IconCompat.createWithResource(context, R.drawable.ic_android), SMALL_IMAGE)
+                            addText("more text")
+                            contentIntent = createIntentToastForDebug(8, "cell8")
+                        }
+
+                        primaryAction = createAction(createIntentToastForDebug(300, "gridRow"), R.drawable.ic_android)
+                    }
+                }
+                5 -> list(context, sliceUri, ListBuilder.INFINITY) {
+                    range {
+                        title = "作業進捗"
+                        subtitle = "あと一息です！！"
+                        primaryAction = anotherAction
+                        value = 60
+                    }
+                }
+                6 -> list(context, sliceUri, ListBuilder.INFINITY) {
+                    inputRange {
+                        title = "スライダー"
+                        thumb = IconCompat.createWithResource(context, R.drawable.ic_android)
+                        primaryAction = anotherAction
+                        inputAction = createIntentToastForDebug(20, "input")
+                    }
+                }
+                7 -> list(context, sliceUri, ListBuilder.INFINITY) {
+                    row {
+                        title = "タイトル"
+                        subtitle = "サブタイトル"
+                        primaryAction = anotherAction
+                        addEndItem(
+                                SliceAction.createDeeplink(PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), 0),
+                                        IconCompat.createWithResource(context, R.drawable.ic_android),
+                                        ListBuilder.SMALL_IMAGE,
+                                        "Enter app"
+                                )
+//                                SliceAction.createToggle(
+//                                        createIntentToastForDebug(40, "toggle"),
+//                                        "Toggle",
+//                                        true
+//                                )
+                        )
+                    }
+                }
+                else -> list(context, sliceUri, ListBuilder.INFINITY) {
+                    header { }
                 }
             }
         } else {
