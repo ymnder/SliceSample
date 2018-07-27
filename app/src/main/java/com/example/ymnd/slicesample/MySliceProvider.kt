@@ -225,11 +225,15 @@ class MySliceProvider : SliceProvider() {
                         subtitle = "あと一息です！！"
                         primaryAction = anotherAction
                         value = 60
+                        max = 200
                     }
                 }
                 6 -> list(context, sliceUri, ListBuilder.INFINITY) {
                     inputRange {
                         title = "スライダー"
+                        value = 60
+                        max = 200
+                        min = 10
                         thumb = IconCompat.createWithResource(context, R.drawable.ic_android)
                         primaryAction = anotherAction
                         inputAction = createIntentToastForDebug(20, "input")
